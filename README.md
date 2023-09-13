@@ -10,7 +10,7 @@ Features:
 3. Option to generate random passwords.
 4. Password database management (add, delete, view).
 5. Data encryption using a combination of the master password and website.
-6. Ability to reset the entire databas.
+6. Ability to reset the entire database.
 
 Usage:
 1. Run the program.
