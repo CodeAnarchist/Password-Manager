@@ -1,16 +1,18 @@
-Password Manager - Documentation
+Password Manager
 Made by @CodeAnarchist
 
 Introduction:
-This program is a password manager that allows the user to store and manage passwords securely(AES256). It provides features for creating, adding, deleting, and viewing passwords/username/site.
+This program is a password manager that allows the user to store and manage passwords securely using AES256 encryption. It provides features for creating, adding, deleting, and viewing passwords, usernames, and associated websites.
 
 Features:
-1. Secure storage of passwords using encryption.
+1. Secure storage of passwords using AES encryption.
 2. Master password protection to access the password manager.
 3. Option to generate random passwords.
 4. Password database management (add, delete, view).
 5. Data encryption using a combination of the master password and website.
 6. Ability to reset the entire database.
+7. Password strength checking to ensure the security of your passwords.
+8. Logging of operations performed in the password manager.
 
 Usage:
 1. Run the program.
@@ -20,7 +22,14 @@ Usage:
    b. Delete a password entry for a specific website.
    c. View the password archive.
    d. Generate a random password.
-   e. Exit the program.
+   e. Open and view the program's log file.
+   f. Exit the program.
+
+Parameters:
+- `--reset`: Use this parameter to reset the entire password database and create a new master password. Example: `PasswordManager.exe --reset`
+- `--help` or `?`: Use this parameter to display help information about the program's usage. Example: `PasswordManager.exe --help`
+Note: If no parameters are provided, the program will run in its regular mode, prompting you to enter the master password or create a new one if it doesn't exist.
+
 
 Security:
 - Passwords are securely encrypted using AES encryption.
@@ -34,14 +43,11 @@ Please note:
 Feedback and Contributions:
 If you have suggestions or you would like to contribute to this project, please make a pull request or contact me on discord "stepleo5000".
 
-Future update I would like to do:
-
-1. 2FA: Add support for 2FA to enhance security.
+Future Updates:
+1. Two-Factor Authentication (2FA): Add support for 2FA to enhance security.
 2. Password Expiration: Implement password expiration policies for enhanced security.
-3. Password Strength Checker: Provide a feature to check the strength of existing passwords.
-4. Export and Import: Allow users to export and import their password database.
-5. Improved User Interface: Enhance the user interface for a more intuitive experience.
-6. Password Recovery: Implement a secure password recovery process for forgotten master passwords.
-7. Audit Trail: Keep a log of actions performed on the password database for auditing purposes.
+3. Export and Import: Allow users to export and import their password database.
+4. Improved User Interface: Enhance the user interface for a more intuitive experience.
+5. Password Recovery: Implement a secure password recovery process for forgotten master passwords.
 
 Thank you for using Password Manager!

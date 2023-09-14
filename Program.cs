@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 class Program
 {
+    private const string LogFileName = "passwords.log"; //log name
     private const string DatabaseFileName = "passwords.json"; //db name
     private const string MasterPasswordFileName = "masterpassword.bin"; //master pw
     private static Dictionary<string, PasswordEntry> passwordDatabase = new Dictionary<string, PasswordEntry>(); //pw dictionary
@@ -27,7 +28,9 @@ class Program
         {
             Console.WriteLine("Use --reset to reset the database");
             Console.WriteLine("Created by @CodeAnarchist");
+            LogToFile($"Help was been shown");
         }
+        LogToFile($"Password Manager was been opened");
 
         while (true)
         {
@@ -39,6 +42,8 @@ class Program
                 masterPasswordHash = HashPassword(masterPassword);
                 File.WriteAllBytes(MasterPasswordFileName, masterPasswordHash);
                 Console.WriteLine("Master password saved.");
+                System.IO.File.WriteAllText(LogFileName, string.Empty);
+                LogToFile($"Database and log were been reset");
                 break;
             }
             else
@@ -64,12 +69,13 @@ class Program
 
         while (true)
         {
-            Console.WriteLine("Welcome to the password manager!");
+            Console.WriteLine("Welcome to the password manager!\n");
             Console.WriteLine("1. Add a password");
             Console.WriteLine("2. Delete a password for a website");
             Console.WriteLine("3. View the password archive");
             Console.WriteLine("4. Generate a Random Password");
-            Console.WriteLine("5. Exit");
+            Console.WriteLine("5. View log");
+            Console.WriteLine("6. Exit\n");
             Console.Write("Choose an option: ");
 
             string choice = Console.ReadLine();
@@ -85,12 +91,15 @@ class Program
                 case "3":
                     ShowPasswordArchive();
                     break;
-                case "5":
+                case "6":
                     SaveDatabase();
                     Environment.Exit(0);
                     break;
                 case "4":
                     PWGen();
+                    break;
+                case "5":
+                    OpenLogFile();
                     break;
                 default:
                     Console.WriteLine("Invalid option. Please try again.");
@@ -99,7 +108,7 @@ class Program
         }
     }
     private static void PWGen() {
-    
+    //generate a random PW
             Console.Write("Enter the desired password length: ");
             if (int.TryParse(Console.ReadLine(), out int passwordLength) && passwordLength > 0)
             {
@@ -112,6 +121,33 @@ class Program
             }
 
         }
+    private static void LogToFile(string message)//log generator
+    {
+        if (!File.Exists(LogFileName))
+        {
+            //if there isn't a log, it will create it 
+            try
+            {
+                File.Create(LogFileName).Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating log file: {ex.Message}");
+                return;
+            }
+        }
+        try
+        {
+            using (StreamWriter writer = File.AppendText(LogFileName))
+            {
+                writer.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss}: {message}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error writing to log file: {ex.Message}");
+        }
+    }
 
     private static bool VerifyMasterPassword(string inputPassword)
     {
@@ -163,6 +199,48 @@ class Program
         Console.WriteLine("Database saved.");
     }
 
+    private static bool IsPasswordStrong(string password)
+    {
+        //define a strong pw
+        const int minLength = 8;
+        const int minUpperCase = 1;
+        const int minLowerCase = 1;
+        const int minDigits = 1;
+        const int minSpecialChars = 1;
+
+        //check min lenght
+        if (password.Length < minLength)
+        {
+            return false;
+        }
+
+        //check uppercase
+        if (password.Count(char.IsUpper) < minUpperCase)
+        {
+            return false;
+        }
+
+        //check lowercase
+        if (password.Count(char.IsLower) < minLowerCase)
+        {
+            return false;
+        }
+
+        //check number
+        if (password.Count(char.IsDigit) < minDigits)
+        {
+            return false;
+        }
+
+        //check spescial character
+        if (password.Count(c => !char.IsLetterOrDigit(c)) < minSpecialChars)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     private static void AddPassword()
     {
         Console.Write("Enter the username: ");
@@ -176,23 +254,50 @@ class Program
 
         if (!string.IsNullOrWhiteSpace(username) && !string.IsNullOrWhiteSpace(password) && password == confirmPassword)
         {
-            Console.Write("Do you want to save this password? (Y/N): ");
-            string confirmation = Console.ReadLine();
-
-            if (confirmation.Trim().ToUpper() == "Y")
+            if (IsPasswordStrong(password))
             {
-                //use url as key in db
-                string key = website;
+                Console.Write("Do you want to save this password? (Y/N): ");
+                string confirmation = Console.ReadLine();
 
-                //encrypt pw before saving
-                string encryptedPassword = EncryptString(password, website);
-                passwordDatabase[key] = new PasswordEntry
+                if (confirmation.Trim().ToUpper() == "Y")
                 {
-                    Username = username,
-                    Password = encryptedPassword,
-                    Website = website
-                };
-                Console.WriteLine("Password saved successfully.");
+                    // Usa l'URL come chiave nel database
+                    string key = website;
+
+                    // Crittografa la password prima di salvarla
+                    string encryptedPassword = EncryptString(password, website);
+                    passwordDatabase[key] = new PasswordEntry
+                    {
+                        Username = username,
+                        Password = encryptedPassword,
+                        Website = website
+                    };
+                    Console.WriteLine("Password saved successfully.");
+                    LogToFile($"Added password for website: {website}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("The password is not strong enough. It should meet certain criteria.");
+                Console.Write("Are you sure you want to use this password? (Y/N): ");
+                string confirmation = Console.ReadLine();
+
+                if (confirmation.Trim().ToUpper() == "Y")
+                {
+                    // Usa l'URL come chiave nel database
+                    string key = website;
+
+                    // Crittografa la password nonostante sia debole
+                    string encryptedPassword = EncryptString(password, website);
+                    passwordDatabase[key] = new PasswordEntry
+                    {
+                        Username = username,
+                        Password = encryptedPassword,
+                        Website = website
+                    };
+                    Console.WriteLine("Password saved successfully.");
+                    LogToFile($"Added password for website: {website}");
+                }
             }
         }
         else
@@ -200,6 +305,7 @@ class Program
             Console.WriteLine("Username or password is empty or passwords do not match. Operation canceled.");
         }
     }
+
 
     private static void DeletePassword()
     {
@@ -217,6 +323,8 @@ class Program
                 //remove db voice with given site(key)
                 passwordDatabase.Remove(key);
                 Console.WriteLine("Password deleted successfully.");
+                LogToFile($"{website} password was been remove");
+
             }
         }
         else
@@ -235,6 +343,7 @@ class Program
 
             Console.WriteLine($"Website: {entry.Value.Website}, Username: {entry.Value.Username}, Password: {decryptedPassword}");
         }
+        LogToFile($"Archive was been shown");
     }
 
     private static string EncryptString(string plainText, string sitePassword)
@@ -336,10 +445,40 @@ class Program
         {
             password[i] = allowedChars[rng.Next(0, allowedChars.Length)];
         }
+        LogToFile($"Random password generated");
 
         return new string(password);
     }
+    private static void OpenLogFile()
+    {
+        if (!File.Exists(LogFileName))
+        {
+            // Se il file di log non esiste, crea un file vuoto
+            try
+            {
+                File.Create(LogFileName).Close();
+               
 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error creating log file: {ex.Message}");
+                return;
+            }
+        }
+        LogToFile($"Log file was been shown");
+        // Ora puoi aprire e leggere il file di log
+        try
+        {
+            string logContents = File.ReadAllText(LogFileName);
+            Console.WriteLine("Log file contents:");
+            Console.WriteLine(logContents);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error reading log file: {ex.Message}");
+        }
+    }
     class PasswordEntry
     {
         public string Username { get; set; }
