@@ -31,10 +31,13 @@ Parameters:
 Note: If no parameters are provided, the program will run in its regular mode, prompting you to enter the master password or create a new one if it doesn't exist.
 
 
-Security:
-- Passwords are securely encrypted using AES encryption.
-- Master password is hashed using PBKDF2.
-- Passwords are decrypted only when displayed.
+Security: security is paramount when it comes to managing passwords, as they represent a critical part of an individual's digital identity. The Password Manager has been designed with robust security measures to ensure the safety of stored passwords and sensitive information.
+- AES Encryption (Advanced Encryption Standard): Passwords are stored using AES encryption, specifically AES-256, which is considered one of the most secure encryption algorithms available. This encryption ensures that even if the database file falls into the wrong hands, the passwords remain protected and unreadable without the correct decryption key.
+- Master Password Protection: Access to the Password Manager is guarded by a master password. The master password serves as a cryptographic key to unlock and access the stored passwords. It is essential to choose a strong and unique master password that is difficult for others to guess.
+- PBKDF2 Hashing (Password-Based Key Derivation Function 2): The master password is securely hashed using PBKDF2. This key derivation function adds an additional layer of security by making it computationally expensive for attackers to crack the master password, even if they have access to the hashed version.
+- Salted Passwords: To further enhance security, each password is salted before encryption. A unique random value known as a "salt" is generated for each password. The salt is then combined with the user's password before encryption. This ensures that even if two users have the same password, their encrypted passwords will be different due to the unique salt.
+- Decryption Only When Needed: Passwords are decrypted only when they need to be displayed, such as when viewing the password archive. This means that the actual passwords are kept encrypted and are only briefly decrypted for the user to see. This minimizes the exposure of sensitive data.
+
 
 Please note:
 - Ensure you remember your master password; it cannot be recovered if forgotten.

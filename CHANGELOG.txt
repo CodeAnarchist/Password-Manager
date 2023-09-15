@@ -1,0 +1,24 @@
+# Password Manager Changelog
+
+## Version 1.0 (Initial Release)
+- Secure storage of passwords using AES encryption.
+- Master password protection to access the password manager.
+- Password database management (add, delete, view).
+- Data encryption using a combination of the master password and website.
+
+## Version 1.1 (Random Password Generation)
+- Added the ability to generate random passwords.
+- Improved password strength checking to ensure the security of passwords.
+- Option to reset the entire password database using the `--reset` parameter.
+
+## Version 1.2 (Help and Documentation)
+- Added a help feature with usage instructions (`--help` or `?`).
+- Comprehensive documentation in English to guide users on features and security.
+- Logging of operations performed in the password manager.
+
+## Version 1.3 (Security Enhancements)
+- Enhanced security by implementing a 512-bit salt for password storage.
+- Improved password encryption and decryption using AES256 encryption.
+- Master password now hashed using PBKDF2 for increased protection.
+- Improved overall security.
+- Added changelog
